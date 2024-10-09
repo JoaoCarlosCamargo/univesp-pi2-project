@@ -1,0 +1,49 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+	<div id="topo">
+		<img src="{{ url_for('static', filename='img/semear_logo.png') }}" alt="Semear Americana | Semeando em terra fértil">
+	</div>
+
+	<hr>
+	<br><br>
+    <h1>Editar Informações de Contato</h1>
+    {% if flash %}
+        <div class="flash">{{ flash }}</div>
+    {% endif %}
+    <form action="{{ url_for('edit_contato', id=contato.id) }}" method="post">
+		<div class="flex-container">
+			<label for="whatsapp"><b>Whatsapp:</b></label>
+			&nbsp;
+			<textarea id="whatsapp" name="whatsapp" rows="1" cols="100">{{ contato.whatsapp }}</textarea>
+		</div>
+        <br>
+		<div class="flex-container">
+			<label for="facebook"><b>Facebook:</b></label>
+			&nbsp;
+			<textarea id="facebook" name="facebook" rows="1" cols="100">{{ contato.facebook }}</textarea>
+		</div>
+        <br>
+		<div class="flex-container">
+			<label for="instagram"><b>Instagram:</b></label>
+			&nbsp;
+			<textarea id="instagram" name="instagram" rows="1" cols="100">{{ contato.instagram }}</textarea>
+		</div>
+        <br>
+		<div class="flex-container">
+			<label for="email"><b>E-mail:</b></label>
+			&nbsp;
+			<textarea id="email" name="email" rows="1" cols="100">{{ contato.email }}</textarea>
+		</div>
+        <br>
+		<div class="flex-container">
+			<label for="endereco"><b>Endereço:</b></label>
+			&nbsp;
+			<textarea id="endereco" name="endereco" rows="2" cols="100">{{ contato.endereco }}</textarea>
+		</div>
+        <br>
+        <center><button type="submit">Salvar</button></center>
+    </form>
+
+{% endblock %}

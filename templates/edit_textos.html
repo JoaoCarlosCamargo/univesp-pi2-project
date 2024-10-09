@@ -1,0 +1,70 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+	<div id="topo">
+		<img src="{{ url_for('static', filename='img/semear_logo.png') }}" alt="Semear Americana | Semeando em terra fértil">
+	</div>
+
+	<hr>
+	<br><br>
+    <h1>Editar Informações de Textos do Site</h1>
+    {% if flash %}
+        <div class="flash">{{ flash }}</div>
+    {% endif %}
+    <form action="{{ url_for('edit_textos', id=textos.id) }}" method="post" enctype="multipart/form-data">
+        <label for="quem_somos"><b>Quem Somos:</b></label>
+		<textarea id="quem_somos" name="quem_somos">{{ textos.quem_somos }}</textarea>
+		<script>CKEDITOR.replace('quem_somos');</script>
+        <br>
+        <hr>
+        <label for="visao_semear"><b>Visão Semear:</b></label>
+		<textarea id="visao_semear" name="visao_semear">{{ textos.visao_semear }}</textarea>
+		<script>CKEDITOR.replace('visao_semear');</script>
+        <br>
+        <hr>
+        <label for="missao_semear"><b>Missão Semear:</b></label>
+        <textarea name="missao_semear" id="missao_semear">{{ textos.missao_semear }}</textarea>
+		<script>CKEDITOR.replace('missao_semear');</script>
+        <br>
+        <hr>
+        <label for="sobre_a_comunidade"><b>Sobre a Comunidade:</b></label>
+        <textarea name="sobre_a_comunidade" id="sobre_a_comunidade">{{ textos.sobre_a_comunidade }}</textarea>
+		<script>CKEDITOR.replace('sobre_a_comunidade');</script>
+        <br>
+        <hr>
+        <label for="transparencia"><b>Transparência:</b></label>
+        <textarea name="transparencia" id="transparencia">{{ textos.transparencia }}</textarea>
+		<script>CKEDITOR.replace('transparencia');</script>
+        <br>
+        <hr>
+        <label for="atividades"><b>Atividades:</b></label>
+        <textarea name="atividades" id="atividades">{{ textos.atividades }}</textarea>
+		<script>CKEDITOR.replace('atividades');</script>
+        <br>
+        <hr>
+        <label for="parceiros"><b>Parceiros:</b></label>
+        <textarea name="parceiros" id="parceiros">{{ textos.parceiros }}</textarea>
+		<script>CKEDITOR.replace('parceiros');</script>
+        <br>
+        <hr>
+        <label for="nossa_historia"><b>Nossa História:</b></label>
+        <textarea name="nossa_historia" id="nossa_historia">{{ textos.nossa_historia }}</textarea>
+		<script>CKEDITOR.replace('nossa_historia');</script>
+        <br>
+        <hr>
+        <label for="novidades"><b>Novidades:</b></label>
+        <textarea name="novidades" id="novidades">{{ textos.novidades }}</textarea>
+		<script>CKEDITOR.replace('novidades');</script>
+        <br>
+        <hr>
+        <label for="semeie"><b>Semeie:</b></label>
+        <br>
+        <textarea name="semeie" id="semeie">{{ textos.semeie }}</textarea>
+		<script>CKEDITOR.replace('semeie');</script>
+        <br>
+        <hr>
+        <center><button type="submit">Salvar</button></center>
+    </form>
+
+{% endblock %}

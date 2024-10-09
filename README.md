@@ -6,7 +6,7 @@ Para executar a aplicação:
 
 No CMD:
 
-'virtualenv venv' ou no windows 'python -m virtualenv venv'
+virtualenv venv
 
 venv\scripts\activate
 

@@ -1,0 +1,11 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+
+    <h2>{% block title %} {% autoescape off %} {{ post['title'] }} {% endautoescape %} {% endblock %}</h2>
+    <span class="badge badge-primary">{{ post['created'] }}</span>
+    {% autoescape off %}
+    <p>{{ post['content'] }}</p>
+    {% endautoescape %}
+{% endblock %}

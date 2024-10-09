@@ -1,0 +1,47 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+	<div id="topo1">
+		<img src="{{ url_for('static', filename='img/semear_logo.png') }}" alt="Semear Americana | Semeando em terra fértil">
+	</div>
+	<hr>
+
+	<br><br>
+	<h1>Semeie conosco!</h1>
+	<br>
+		<center>
+		<img src="{{ url_for('static', filename='img/qrcode-pix.png') }}" alt="Pix Semear Americana" width="140" height="140">
+		<br>
+		<b>Chave PIX CNPJ:</b> 32.787.100/0001-04
+		<br>
+		<b>Nome:</b> Semear Americana
+		</center>
+
+		<hr>
+
+		<center>
+			{% for contato in contato %}
+				<a href="{{ contato['instagram'] }}">
+				  <img src="{{ url_for('static', filename='img/instagram.png') }}" alt="Instagram" width="40" height="40">
+				</a>&nbsp;&nbsp;&nbsp;
+				<a href="{{ contato['facebook'] }}">
+				  <img src="{{ url_for('static', filename='img/facebook.png') }}" alt="Facebook" width="40" height="40">
+				</a>&nbsp;&nbsp;&nbsp;
+				<a href="https://api.whatsapp.com/send?phone={{ contato['whatsapp'] }}&text=Olá! Venho a partir do site.">
+				  <img src="{{ url_for('static', filename='img/whatsapp.png') }}" alt="Whatsapp" width="40" height="40">
+				</a>
+				<br><br>
+				<a href="mailto:{{ contato['email'] }}">{{ contato['email'] }}</a>
+			{% endfor %}
+		</center>
+
+		<hr>
+
+		{% autoescape off %}
+		{% for texto in textos %}
+		  {{ texto['semeie'] }}
+		{% endfor %}
+		{% endautoescape %}
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+	<div id="topo">
+		<img src="{{ url_for('static', filename='img/semear_logo.png') }}" alt="Semear Americana | Semeando em terra fértil">
+	</div>
+
+	<hr>
+	<br><br>
+	<h1>Documentos</h1>
+	Manter registros precisos e acessíveis, bem como divulgar regularmente relatórios financeiros detalhados, permite que todos os interessados entendam como os recursos são utilizados. Isso não só constrói confiança, mas também promove uma cultura de prestação de contas e responsabilidade dentro da organização.
+	<br><br>
+
+	<div id="reports">
+	{% if not reports %}
+	<p>Nenhum documento para exibição.</p>
+	{% else %}
+	<table class="table">
+	    <thead>
+		<tr>
+		    <th>Descrição</th>
+		    <th>Arquivo</th>
+		</tr>
+	    </thead>
+	    <tbody>
+		{% for report in reports %}
+		    <tr>
+			<td>{{ report.description }}</td>
+			<td>
+			<a href="{{ url_for('download_report', id=report.id) }}">{{ report.report_name }}</a></td>
+		    </tr>
+		{% endfor %}
+	    </tbody>
+	</table>
+	{% endif %}
+	</div>
+
+{% endblock %}

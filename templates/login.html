@@ -1,0 +1,33 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+	<div id="topo">
+		<img src="{{ url_for('static', filename='img/semear_logo.png') }}" alt="Semear Americana | Semeando em terra fÃ©rtil">
+	</div>
+
+	<hr>
+	<br><br>
+    <h3>Acesso</h3>
+
+{% with messages = get_flashed_messages() %}  {% if messages %}
+    <ul class="flash-messages">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+    <form action="{{ url_for('login') }}" method="post">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required>
+        <br>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required>
+        <br>
+        <br>
+        <button type="submit">Entrar</button>
+	</form>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+. Ana Paula de Oliveira Dias
+. inspiração: https://confeitariadama.com.br/
+. pesquisa no site
+. cadastro de produtos: categoria, título, descrição, valor, foto
+. cadatro promoção do dia
+. link whatsapp, instagram, facebook
+. cadastre-se (gmail, facebook)
+. carrossel com fotos grandes e navegação lateral
+. criar conta instagram, facebook
+. api postagem instagram aparecer no site
+. missão
+. visão
+. valores
+. menu fixo
+. acessibilidade?!?!
+. 

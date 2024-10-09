@@ -1,0 +1,52 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+	<div id="topo">
+		<img src="{{ url_for('static', filename='img/semear_logo.png') }}" alt="Semear Americana | Semeando em terra fÃ©rtil">
+	</div>
+
+	<hr>
+	<br><br>
+    <h1>Criar usuário</h1>
+    {% if flash %}
+        <div class="flash">{{ flash }}</div>
+    {% endif %}
+    <form action="{{ url_for('create_usuario') }}" method="post" onsubmit="return validatePasswords()">
+		<div class="flex-container">
+			<label for="nome"><b>Nome:</b></label>
+			&nbsp;
+			<input type="text" name="nome" id="nome" required>
+        </div>
+        <br>
+		<div class="flex-container">
+			<label for="senha"><b>Senha:</b></label>
+			&nbsp;
+			<input type="password" name="senha" id="senha" required>
+        </div>
+		<br>
+		<div class="flex-container">
+			<label for="confirm_senha"><b>Confirmar Senha:</b></label>
+			&nbsp;
+			<input type="password" id="confirm_senha" name="confirm_senha" required>
+        </div>
+        <br>
+        <center><button type="submit">Salvar</button></center>
+    </form>
+
+    <script>
+        function validatePasswords() {
+            const password = document.getElementById('senha').value;
+            const confirmPassword = document.getElementById('confirm_senha').value;
+
+            if (password !== confirmPassword) {
+                alert('As senhas não coincidem!');
+                return false;
+            }
+
+            // Se as senhas coincidem, envie o formulário
+            return true;
+        }
+    </script>
+
+{% endblock %}
