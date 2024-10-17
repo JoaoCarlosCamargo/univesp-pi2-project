@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS promocao (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL UNIQUE,
+    descricao TEXT NOT NULL,
+    imagem TEXT NOT NULL
+);
+
 DROP TABLE IF EXISTS contato;
 
 CREATE TABLE contato (

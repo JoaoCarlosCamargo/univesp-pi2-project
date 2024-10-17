@@ -1,0 +1,34 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+	<br><br><br>
+
+	<br><br>
+    <h1>Editar Informações da Promoção atual</h1>
+    {% if flash %}
+        <div class="flash">{{ flash }}</div>
+    {% endif %}
+    <form action="{{ url_for('edit_promocao', id=promocao.id) }}" method="post" enctype="multipart/form-data">
+		<div class="flex-container">
+			<label for="nome"><b>Nome:</b></label>
+			&nbsp;
+			<textarea id="nome" name="nome" rows="1" cols="100">{{ promocao.nome }}</textarea>
+		</div>
+        <br>
+		<div class="flex-container">
+			<label for="descricao"><b>Descricao:</b></label>
+			&nbsp;
+			<textarea id="descricao" name="descricao" rows="1" cols="100">{{ promocao.descricao }}</textarea>
+			<script>CKEDITOR.replace('descricao');</script>
+		</div>
+        <br>
+		<div class="flex-container">
+			<label for="imagem"><b>Imagem:</b></label>
+			&nbsp;
+			<input type="file" id="imagem" name="imagem"><br><br>
+		</div>
+        <br>
+        <center><button type="submit">Salvar</button></center>
+    </form>
+
+{% endblock %}

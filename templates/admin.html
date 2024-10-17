@@ -2,11 +2,6 @@
 
 {% block content %}
 	<br><br><br>
-	<div id="topo">
-		<img src="{{ url_for('static', filename='img/semear_logo.png') }}" alt="Semear Americana | Semeando em terra fértil">
-	</div>
-
-	<hr>
 	<br><br>
 	<h1>Administração</h1>
 
@@ -60,6 +55,40 @@
     {% endif %}
     </div>
 
+    <br>
+	<hr>
+	<br>
+
+	<div id="promocao">
+	<br><br><br>
+    <h2>Cadastro do Bolo da SemANA</h2>
+    {% if not promocao %}
+        <p>Configuração não cadastrada.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Ações</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Imagem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for promocao in promocao %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('edit_promocao', id=promocao.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                        </td>
+                        <td>{{ promocao.nome }}</td>
+                        <td>{{ promocao.descricao }}</td>
+                        <td>{{ promocao.imagem }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    </div>
     <br>
 	<hr>
 	<br>

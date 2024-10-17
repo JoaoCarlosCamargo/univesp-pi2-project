@@ -6,6 +6,9 @@ from sqlite3 import connect
 from io import BytesIO
 from init_db import criar_tabelas
 import os
+import uuid
+from werkzeug.utils import secure_filename
+import base64
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -23,6 +26,35 @@ def get_post(post_id):
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'chave-secreta'
+app.config['UPLOAD_FOLDER'] = 'static/images'
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024  # 32MB (Aumente se necessário)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+#def salvar_imagem(arquivo):
+#    if arquivo and allowed_file(arquivo.filename):
+#        nome_unico = str(uuid.uuid4()) + '_' + secure_filename(arquivo.filename)
+#        caminho_completo = os.path.join(app.config['UPLOAD_FOLDER'], nome_unico)
+#        arquivo.save(caminho_completo)
+#        return nome_unico
+#    return None
+def salvar_imagem(arquivo):
+    if arquivo and allowed_file(arquivo.filename):
+        try:
+            nome_unico = str(uuid.uuid4()) + '_' + secure_filename(arquivo.filename)
+            caminho_completo = os.path.join(app.config['UPLOAD_FOLDER'], nome_unico)
+            arquivo.save(caminho_completo)
+            return nome_unico
+        except Exception as e:
+            # Logar o erro para análise posterior
+            logging.error(f"Erro ao salvar imagem: {str(e)}")
+            return None
+    return None
+
+# ... (resto do código)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -72,11 +104,12 @@ def admin():
     conn = get_db_connection()
     posts = conn.execute('SELECT * FROM posts').fetchall()
     contato = conn.execute('SELECT * FROM contato').fetchall()
+    promocao = conn.execute('SELECT * FROM promocao').fetchall()
     usuarios = conn.execute('SELECT * FROM usuarios').fetchall()
     reports = conn.execute('SELECT * FROM reports ORDER BY ordem').fetchall()
     textos = conn.execute('SELECT * FROM textos').fetchall()
     conn.close()
-    return render_template('admin.html', usuario=current_user.nome, posts=posts, contato=contato, usuarios=usuarios, reports=reports, textos=textos)
+    return render_template('admin.html', usuario=current_user.nome, posts=posts, contato=contato, usuarios=usuarios, reports=reports, textos=textos, promocao=promocao)
 
 @app.route('/logout')
 @login_required
@@ -102,10 +135,39 @@ def index():
     mensagem_bottom = conn.execute('SELECT texto FROM mensagem_bottom').fetchall()
     textos = conn.execute('SELECT * FROM textos').fetchall()
     reports = conn.execute('SELECT * FROM reports ORDER BY ordem').fetchall()
+    promocao = conn.execute('SELECT nome, descricao, imagem FROM promocao').fetchall()
+    # Criar uma lista para armazenar as promoções com a URL da imagem
+    promocoes_com_url = []
+
+    for promocao in promocao:
+        # Convertendo a string para bytes e codificando em base64
+        imagem_binaria = promocao['imagem'].encode('utf-8')
+        imagem_base64 = base64.b64encode(imagem_binaria).decode('utf-8')
+        
+        extensao = promocao['imagem'].split('.')[-1]
+        mime_types = {
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'png': 'image/png',
+        # adicione outros tipos MIME conforme necessário
+        }
+        tipo_mime = mime_types.get(extensao, 'image/jpeg')  # valor padrão se a extensão não for encontrada
+
+        data_url = f"data:{tipo_mime};base64,{imagem_base64}"
+        #data_url = f"data:image/jpeg;base64,{imagem_base64}"
+
+        # Criando um novo dicionário e adicionando à lista
+        nova_promocao = {
+            'nome': promocao['nome'],
+            'descricao': promocao['descricao'],
+            'imagem': promocao['imagem'],
+            'imagem_url': data_url
+        }
+        promocoes_com_url.append(nova_promocao)
     conn.close()
     global indice_atual
     imagem_atual = imagens[indice_atual]
-    return render_template('index.html', posts=posts, contato=contato, mensagem_bottom=mensagem_bottom, imagem=imagem_atual, textos=textos, reports=reports)
+    return render_template('index.html', posts=posts, contato=contato, mensagem_bottom=mensagem_bottom, imagem=imagem_atual, textos=textos, reports=reports, promocao=promocoes_com_url)
 
 @app.route('/<int:post_id>')
 def post(post_id):
@@ -382,6 +444,31 @@ def edit_textos(id):
         return redirect(url_for('admin'))
 
     return render_template('edit_textos.html', textos=textos)
+
+# Route for editing a promocao
+@app.route('/admin/edit_promocao/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_promocao(id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM promocao WHERE id = ?', (id,))
+    promocao = cursor.fetchone()
+    conn.close()
+
+    if request.method == 'POST':
+        nome = request.form['nome']
+        descricao = request.form['descricao']
+        imagem = request.files['imagem']
+        nome_imagem = salvar_imagem(imagem)
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('UPDATE promocao SET nome = ?, descricao = ?, imagem = ? WHERE id = ?', (nome, descricao, nome_imagem, id))
+        conn.commit()
+        conn.close()
+        flash('Promoção alterada com sucesso!')
+        return redirect(url_for('index'))
+
+    return render_template('edit_promocao.html', promocao=promocao)
 
 @app.route('/reports')
 def reports():

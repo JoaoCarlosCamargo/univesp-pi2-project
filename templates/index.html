@@ -20,6 +20,28 @@
 }
 </style>
 
+	<div id="promocao">
+		<br><br><br><br><br>
+		<h1>Bolo da SemANA</h1>
+
+		{% autoescape off %}
+		{% for promocao in promocao %}
+		  <b>{{ promocao['nome'] }}</b>
+		  <br>
+		  {{ promocao['descricao'] }}
+		  <img src="{{ url_for('static', filename='images/' + promocao.imagem) }}" alt="Promoção">
+		{% endfor %}
+		{% endautoescape %}
+
+	{% for contato in contato %}
+		<a class="navbar-brand" href="https://api.whatsapp.com/send?phone={{ contato['whatsapp'] }}&text=Olá! Venho a partir do site.">
+		  &nbsp;<b>Clique aqui e garanta já o seu!</b>
+		</a>
+	{% endfor %}
+
+		<hr>
+	</div>
+
 	<div id="quemsomos">
 		<br><br><br><br><br>
 		<h1>Quem Sou</h1>
@@ -33,9 +55,8 @@
 		<hr>
 	</div>
 
-	<br>
-
 	<div id="acomunidade">
+		<br><br><br><br><br>
 		<h1>Nossa Comunidade</h1>
 		{% autoescape off %}
 		{% for texto in textos %}
@@ -46,8 +67,11 @@
 		<br><br>
 
 		<center>
+	</div>
 
-		<h1>Imagens</h1>
+	<div id="galeria">
+		<br><br><br><br><br>
+		<h1>Galeria</h1>
 
 <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
   <div class="carousel-inner">

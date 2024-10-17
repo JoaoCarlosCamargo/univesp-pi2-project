@@ -28,5 +28,9 @@ def criar_tabelas():
       INSERT INTO textos (quem_somos, visao_semear, missao_semear, sobre_a_comunidade, nossa_historia, atividades, parceiros, transparencia, novidades, semeie) select ?, ?, ?, ?, ?, ?, ?, ?, ?, ? where not exists(select * from textos)
     """, ('quem_somos_texto', 'visao_semear_texto', 'missao_semear', 'sobre_a_comunidade', 'nossa_historia', 'atividades', 'parceiros', 'transparencia', 'novidades', 'semeie'))
 
+    c.execute("""
+      INSERT INTO promocao (nome, descricao, imagem) SELECT ?, ?, ? WHERE NOT EXISTS(SELECT * from promocao)
+     """, ('Aguarde!', 'Em breve uma nova promoção', ''))
+
     conn.commit()
     conn.close()
