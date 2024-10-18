@@ -52,6 +52,22 @@
 		{% endfor %}
 		{% endautoescape %}
 
+		<br>
+		<center>
+			{% for contato in contato %}
+				<a href="{{ contato['instagram'] }}">
+				  <img src="{{ url_for('static', filename='img/instagram.png') }}" alt="Instagram" width="40" height="40">
+				</a>&nbsp;&nbsp;&nbsp;
+				<a href="{{ contato['facebook'] }}">
+				  <img src="{{ url_for('static', filename='img/facebook.png') }}" alt="Facebook" width="40" height="40">
+				</a>&nbsp;&nbsp;&nbsp;
+				<a href="https://api.whatsapp.com/send?phone={{ contato['whatsapp'] }}&text=OlÃ¡! Venho a partir do site.">
+				  <img src="{{ url_for('static', filename='img/whatsapp.png') }}" alt="Whatsapp" width="40" height="40">
+				</a>
+				<br><br>
+			{% endfor %}
+		</center>
+
 		<hr>
 	</div>
 
@@ -136,144 +152,15 @@
 
 	<br>
 
-	<div id="historia">
-		<br><br><br>
-		<h1>Nossa História</h1>
-		{% autoescape off %}
-		{% for texto in textos %}
-		  {{ texto['nossa_historia'] }}
-		{% endfor %}
-		{% endautoescape %}
-
-		<br>
-
-		<hr>
-	</div>
-
-	<br>
-
-	<div id="atividades">
-		<br><br><br>
-		<h1>Trabalhos e atividades desenvolvidos durante o ano</h1>
-		{% autoescape off %}
-		{% for texto in textos %}
-		  {{ texto['atividades'] }}
-		{% endfor %}
-		{% endautoescape %}
-
-		<br>
-		<hr>
-		<br>
-
-	</div>
-
-	<br>
-
-	<div id="parceiros">
-		<br><br><br>
-		<h1>Parceiros</h1>
-		{% autoescape off %}
-		{% for texto in textos %}
-		  {{ texto['parceiros'] }}
-		{% endfor %}
-		{% endautoescape %}
-
-		<br><br>
-		Nossos parceiros:
-		<br><br>
-
-		<center>
-			<a href="https://www.univesp.br/"><img src="{{ url_for('static', filename='img/univesp.png') }}" alt="UNIVESP"></a>
-			<br>
-			<a href="www.univesp.br">www.univesp.br</a>
-			<br><br>
-			<a href="https://www.univesp.br/"><img src="{{ url_for('static', filename='img/univesp.png') }}" alt="UNIVESP"></a>
-			<br>
-			<a href="www.univesp.br">www.univesp.br</a>
-			<br><br>
-			<a href="https://www.univesp.br/"><img src="{{ url_for('static', filename='img/univesp.png') }}" alt="UNIVESP"></a>
-			<br>
-			<a href="www.univesp.br">www.univesp.br</a>
-			<br><br>
-			<a href="https://www.univesp.br/"><img src="{{ url_for('static', filename='img/univesp.png') }}" alt="UNIVESP"></a>
-			<br>
-			<a href="www.univesp.br">www.univesp.br</a>
-		</center>
-
-		<br><br>
-
-		<hr>
-	</div>
-
-	<br>
-
 	<div id="transparencia">
-		<br><br><br>
-		<h1>Transparência</h1>
+		<br><br><br><br><br>
+		<h1>Meus Ingredientes</h1>
 		{% autoescape off %}
 		{% for texto in textos %}
 		  {{ texto['transparencia'] }}
 		{% endfor %}
 		{% endautoescape %}
 
-		<br>
-		{% if reports %}
-		<h3>Documentos</h3>
-		<a href="{{ url_for('reports') }}">Acesse nossos documentos.</a>
-		{% endif %}
-
-		<hr>
-	</div>
-
-	<br><br>
-
-	<div id="novidades">
-		<br><br><br>
-		<h1>Novidades</h1>
-		{% autoescape off %}
-		{% for texto in textos %}
-		  {{ texto['novidades'] }}
-		{% endfor %}
-		{% endautoescape %}
-
-		<br>
-		{% autoescape off %}
-		{% for post in (posts|sort(attribute='created', reverse=True))[:3] %}
-			<a href="{{ url_for('post', post_id=post['id']) }}">
-				<h3>{{ post['title'] }}</h3>
-			</a>
-			<span class="badge badge-primary">{{ post['created'] }}</span>
-			<hr>
-		{% endfor %}
-		{% endautoescape %}
-
-		<br>
-		<a href="{{ url_for('posts') }}">Acesse as postagens anteriores.</a>
-
-	</div>
-
-	<br>
-
-	<div id="contato">
-		<br><br>
-		<h1>Contato</h1>
-		<br>
-		<center>
-			{% for contato in contato %}
-				<a href="{{ contato['instagram'] }}">
-				  <img src="{{ url_for('static', filename='img/instagram.png') }}" alt="Instagram" width="40" height="40">
-				</a>&nbsp;&nbsp;&nbsp;
-				<a href="{{ contato['facebook'] }}">
-				  <img src="{{ url_for('static', filename='img/facebook.png') }}" alt="Facebook" width="40" height="40">
-				</a>&nbsp;&nbsp;&nbsp;
-				<a href="https://api.whatsapp.com/send?phone={{ contato['whatsapp'] }}&text=OlÃ¡! Venho a partir do site.">
-				  <img src="{{ url_for('static', filename='img/whatsapp.png') }}" alt="Whatsapp" width="40" height="40">
-				</a>
-				<br><br>
-			{% endfor %}
-			<br><br>
-		</center>
-		<hr>
 	</div>
 
 {% endblock %}
