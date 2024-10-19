@@ -257,18 +257,11 @@ def edit_textos(id):
 
     if request.method == 'POST':
         quem_somos = request.form['quem_somos']
-        visao_semear = request.form['visao_semear']
-        missao_semear = request.form['missao_semear']
         sobre_a_comunidade = request.form['sobre_a_comunidade']
-        nossa_historia = request.form['nossa_historia']
-        atividades = request.form['atividades']
-        parceiros = request.form['parceiros']
         transparencia = request.form['transparencia']
-        novidades = request.form['novidades']
-        semeie = request.form['semeie']
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('UPDATE textos SET quem_somos = ?, visao_semear = ?, missao_semear = ?, sobre_a_comunidade = ?, nossa_historia = ?, atividades = ?, parceiros = ?, transparencia = ?, novidades = ?, semeie = ? WHERE id = ?', (quem_somos, visao_semear, missao_semear, sobre_a_comunidade, nossa_historia, atividades, parceiros, transparencia, novidades, semeie, id))
+        cursor.execute('UPDATE textos SET quem_somos = ?, sobre_a_comunidade = ?, transparencia = ? WHERE id = ?', (quem_somos, sobre_a_comunidade, transparencia,  id))
         conn.commit()
         conn.close()
         flash('Textos alterados com sucesso!')
@@ -300,24 +293,6 @@ def edit_promocao(id):
         return redirect(url_for('index'))
 
     return render_template('edit_promocao.html', promocao=promocao)
-
-@app.route('/reports')
-def reports():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    reports = conn.execute('SELECT * FROM reports').fetchall()
-    conn.close()
-
-    return render_template('reports.html', reports=reports)
-
-@app.route('/posts')
-def posts():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    posts = conn.execute('SELECT * FROM posts').fetchall()
-    conn.close()
-
-    return render_template('posts.html', posts=posts)
 
 # Rota para exibir o formulário de cadastro
 @app.route('/cadastro')
@@ -397,6 +372,52 @@ def excluir_cliente(id):
     conn.close()
     flash('Cliente excluído!')
     return redirect(url_for("admin"))
+
+# Rota para exibir o formulário de campanha
+@app.route('/campanha')
+def campanha():
+    return render_template('campanha.html')
+
+# Rota para processar o campanha
+@app.route('/campanha', methods=['POST'])
+def process_campanha():
+    texto = request.form['texto']
+
+    if not texto:
+        flash('Texto obrigatório!')
+        return redirect('/')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Recuperar todos os números de telefone da tabela 'cliente'
+    cursor.execute('SELECT telefone FROM cliente')
+    telefones = cursor.fetchall()
+    
+    # Percorrer todos os registros e enviar WhatsApp
+    for cliente in telefones:
+        telefone = cliente['telefone']
+        enviar_campanha_whatsapp(telefone, texto)
+    
+    conn.close()    
+
+    flash('campanha realizado com sucesso!')
+
+    return redirect('/')
+    
+# Função para enviar mensagem da campanha no WhatsApp
+def enviar_campanha_whatsapp(telefone, texto):
+    account_sid = 'AC5b30a8de6e335f7a233678b3b9ee8758'
+    auth_token = 'bd8b0ddf1fa5047c3329401edcca3f8c'
+    client = Client(account_sid, auth_token)
+
+    mensagem = client.messages.create(
+        body={texto},
+        from_='whatsapp:+14155238886',
+        to=f'whatsapp:+55{telefone}'
+    )
+
+    print(mensagem.sid)
 
 if __name__ == "__main__":
   criar_tabelas()

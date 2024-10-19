@@ -25,8 +25,8 @@ def criar_tabelas():
     """, ('© 2024 Website desenvolvido por alunos da UNIVESP para o Projeto Integrador em Computação II.',))
 
     c.execute("""
-      INSERT INTO textos (quem_somos, visao_semear, missao_semear, sobre_a_comunidade, nossa_historia, atividades, parceiros, transparencia, novidades, semeie) select ?, ?, ?, ?, ?, ?, ?, ?, ?, ? where not exists(select * from textos)
-    """, ('quem_somos_texto', 'visao_semear_texto', 'missao_semear', 'sobre_a_comunidade', 'nossa_historia', 'atividades', 'parceiros', 'transparencia', 'novidades', 'semeie'))
+      INSERT INTO textos (quem_somos, sobre_a_comunidade, transparencia) select ?, ?, ? where not exists(select * from textos)
+    """, ('quem_somos_texto', 'sobre_a_comunidade', 'transparencia'))
 
     c.execute("""
       INSERT INTO promocao (nome, descricao, imagem) SELECT ?, ?, ? WHERE NOT EXISTS(SELECT * from promocao)

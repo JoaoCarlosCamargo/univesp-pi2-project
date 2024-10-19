@@ -57,13 +57,6 @@ CREATE TABLE IF NOT EXISTS reports (
 CREATE TABLE IF NOT EXISTS textos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   quem_somos TEXT NOT NULL,
-  visao_semear TEXT NOT NULL,
-  missao_semear TEXT NOT NULL,
   sobre_a_comunidade TEXT NOT NULL,
-  nossa_historia TEXT NOT NULL,
-  atividades TEXT NOT NULL,
-  parceiros TEXT NOT NULL,
-  transparencia TEXT NOT NULL,
-  novidades TEXT NOT NULL,
-  semeie TEXT NOT NULL
+  transparencia TEXT NOT NULL
 );

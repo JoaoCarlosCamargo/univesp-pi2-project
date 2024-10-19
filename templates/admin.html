@@ -1,25 +1,7 @@
-{% extends 'base2.html' %}
+{% extends 'base3.html' %}
 
 {% block content %}
-	<br><br><br>
-	<br><br>
-	<h1>Administração</h1>
-
-	<br>
-
-	<center>
-		<a href="#textos">Textos do site</a>
-		&nbsp;&nbsp;&nbsp;
-		<a href="#promocao">Bolo da SemANA</a>
-		&nbsp;&nbsp;&nbsp;
-		<a href="#contato">Contato</a>
-		&nbsp;&nbsp;&nbsp;
-		<a href="#usuarios">Usuários</a>
-		&nbsp;&nbsp;&nbsp;
-		<a href="#clientes">Clientes</a>
-	</center>
-
-	<br>
+	<br><br><br><br><br>
 
 {% with messages = get_flashed_messages() %}  {% if messages %}
     <ul class="flash-messages">
@@ -32,36 +14,9 @@
 
 	<br>
 
-	{% if usuario %}
-		Olá {{ usuario }}!
-	{% endif %}
-    <br><a href="/logout">Sair</a>
-
-	<br>
-	<hr>
-	<br>
-
-	<div id="textos">
-	<br><br><br><br><br>
-    <h2>Configuração de textos do Site</h2>
-    {% if not textos %}
-        <p>Configuração não cadastrada.</p>
-    {% else %}
-		{% for texto in textos %}
-			Quem Sou, Nossa Comunidade, Ingredientes.
-			<br>
-		    <a href="{{ url_for('edit_textos', id=texto.id) }}" class="btn btn-sm btn-warning">Editar</a>
-		{% endfor %}
-    {% endif %}
-    </div>
-
-    <br>
-	<hr>
-	<br>
-
 	<div id="promocao">
 	<br><br><br><br><br>
-    <h2>Cadastro do Bolo da SemANA</h2>
+    <h2>Bolo da Sem<b>ANA</b></h2>
     {% if not promocao %}
         <p>Configuração não cadastrada.</p>
     {% else %}
@@ -89,13 +44,68 @@
         </table>
     {% endif %}
     </div>
+
+	<br>
+	<hr>
+	<br>
+
+	<div id="clientes">
+	<br><br><br><br><br>
+    <h2>Clientes cadastrados</h2>
+    <br>
+    {% if not clientes %}
+        <p>Nenhum cliente cadastrado.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="150">Ações</th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in clientes %}
+                    <tr>
+                        <td width="150">
+                        	{% if usuario.nome != 'admin' %}
+                            <a href="{{ url_for('excluir_cliente', id=cliente[0]) }}" class="btn btn-sm btn-danger">Excluir</a>
+                            {% endif %}
+                        </td>
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.telefone }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    </div>
+
+    <br>
+	<hr>
+	<br>
+
+	<div id="textos">
+	<br><br><br><br><br>
+    <h2>Textos do Site</h2>
+    {% if not textos %}
+        <p>Configuração não cadastrada.</p>
+    {% else %}
+		{% for texto in textos %}
+			Quem Sou, Nossa Comunidade, Ingredientes.
+			<br>
+		    <a href="{{ url_for('edit_textos', id=texto.id) }}" class="btn btn-sm btn-warning">Editar</a>
+		{% endfor %}
+    {% endif %}
+    </div>
+
     <br>
 	<hr>
 	<br>
 
 	<div id="contato">
 	<br><br><br><br><br>
-    <h2>Configurações de Contato</h2>
+    <h2>Contato</h2>
     {% if not contato %}
         <p>Configuração não cadastrada.</p>
     {% else %}
@@ -159,42 +169,6 @@
                         </td>
                         <td>{{ usuario.nome }}</td>
                         <td>{{ usuario.created }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-    </div>
-
-	<br>
-	<hr>
-	<br>
-
-	<div id="clientes">
-	<br><br><br><br><br>
-    <h2>Clientes cadastrados</h2>
-    <br>
-    {% if not clientes %}
-        <p>Nenhuma cliente cadastrado.</p>
-    {% else %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th width="150">Ações</th>
-                    <th>Nome</th>
-                    <th>Telefone</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for cliente in clientes %}
-                    <tr>
-                        <td width="150">
-                        	{% if usuario.nome != 'admin' %}
-                            <a href="{{ url_for('excluir_cliente', id=cliente[0]) }}" class="btn btn-sm btn-danger">Excluir</a>
-                            {% endif %}
-                        </td>
-                        <td>{{ cliente.nome }}</td>
-                        <td>{{ cliente.telefone }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

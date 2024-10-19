@@ -1,0 +1,28 @@
+{% extends 'base3.html' %}
+
+{% block content %}
+<br><br><br><br><br>
+    <h1>Campanha</h1>
+
+    <form action="/campanha" method="POST">
+		<div class="flex-container">
+			<label for="texto"><b>Texto:</b></label>
+			<br/>
+			<textarea id="texto" name="texto" rows="1" cols="100">Altere a mensagem que será enviada para todos os clientes cadastrados no site.</textarea>
+			<script>CKEDITOR.replace('texto');</script>
+		</div>
+        <br>
+        <center><button type="submit">Enviar</button></center>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
