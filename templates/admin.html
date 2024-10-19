@@ -10,13 +10,13 @@
 	<center>
 		<a href="#textos">Textos do site</a>
 		&nbsp;&nbsp;&nbsp;
+		<a href="#promocao">Bolo da SemANA</a>
+		&nbsp;&nbsp;&nbsp;
 		<a href="#contato">Contato</a>
 		&nbsp;&nbsp;&nbsp;
 		<a href="#usuarios">Usuários</a>
 		&nbsp;&nbsp;&nbsp;
-		<a href="#posts">Postagens</a>
-		&nbsp;&nbsp;&nbsp;
-		<a href="#reports">Documentos</a>
+		<a href="#clientes">Clientes</a>
 	</center>
 
 	<br>
@@ -42,13 +42,13 @@
 	<br>
 
 	<div id="textos">
-	<br><br><br>
+	<br><br><br><br><br>
     <h2>Configuração de textos do Site</h2>
     {% if not textos %}
         <p>Configuração não cadastrada.</p>
     {% else %}
 		{% for texto in textos %}
-			Quem somos, visão, missão, ...
+			Quem Sou, Nossa Comunidade, Ingredientes.
 			<br>
 		    <a href="{{ url_for('edit_textos', id=texto.id) }}" class="btn btn-sm btn-warning">Editar</a>
 		{% endfor %}
@@ -60,7 +60,7 @@
 	<br>
 
 	<div id="promocao">
-	<br><br><br>
+	<br><br><br><br><br>
     <h2>Cadastro do Bolo da SemANA</h2>
     {% if not promocao %}
         <p>Configuração não cadastrada.</p>
@@ -94,7 +94,7 @@
 	<br>
 
 	<div id="contato">
-	<br><br><br>
+	<br><br><br><br><br>
     <h2>Configurações de Contato</h2>
     {% if not contato %}
         <p>Configuração não cadastrada.</p>
@@ -133,8 +133,8 @@
 	<br>
 
 	<div id="usuarios">
-	<br><br><br>
-    <h2>Usuários</h2>
+	<br><br><br><br><br>
+    <h2>Usuários para administração do site</h2>
     <a href="{{ url_for('create_usuario') }}" class="btn btn-sm btn-success">Novo Usuário</a>
     <br>
     {% if not usuarios %}
@@ -170,72 +170,31 @@
 	<hr>
 	<br>
 
-	<div id="posts">
-	<br><br><br>
-	<h2>Postagens</h2>
-    <a href="{{ url_for('create_post') }}" class="btn btn-sm btn-success">Nova Postagem</a>
+	<div id="clientes">
+	<br><br><br><br><br>
+    <h2>Clientes cadastrados</h2>
     <br>
-    {% if not posts %}
-        <p>Nenhuma postagem cadastrada.</p>
+    {% if not clientes %}
+        <p>Nenhuma cliente cadastrado.</p>
     {% else %}
         <table class="table">
             <thead>
                 <tr>
                     <th width="150">Ações</th>
-                    <th>Título</th>
-                    <th>Conteúdo</th>
-                    <th>Data</th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
                 </tr>
             </thead>
             <tbody>
-                {% for post in posts|sort(attribute='created', reverse=True) %}
+                {% for cliente in clientes %}
                     <tr>
                         <td width="150">
-                            <a href="{{ url_for('edit_post', id=post.id) }}" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="{{ url_for('excluir_post', id=post[0]) }}" class="btn btn-sm btn-danger">Excluir</a>
+                        	{% if usuario.nome != 'admin' %}
+                            <a href="{{ url_for('excluir_cliente', id=cliente[0]) }}" class="btn btn-sm btn-danger">Excluir</a>
+                            {% endif %}
                         </td>
-                        <td>{{ post.title[0:30] }}...</td>
-                        <td>{{ post.content[0:30] }}...</td>
-                        <td>{{ post.created }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-    </div>
-
-	<br>
-	<hr>
-	<br>
-
-	<div id="reports">
-	<br><br><br>
-	<h2>Documentos</h2>
-    <a href="{{ url_for('create_report') }}"  class="btn btn-sm btn-success">Novo Relatório</a>
-    <br>
-    {% if not reports %}
-        <p>Nenhum documentos cadastrado.</p>
-    {% else %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th width="150">Ações</th>
-                    <th>Ordem</th>
-                    <th>Descrição</th>
-                    <th>Arquivo</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for report in reports %}
-                    <tr>
-                        <td width="150">
-                            <a href="{{ url_for('edit_report', id=report.id) }}" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="{{ url_for('excluir_report', id=report.id) }}" class="btn btn-sm btn-danger">Excluir</a>
-                        </td>
-                        <td>{{ report.ordem }}</td>
-                        <td>{{ report.description }}</td>
-                        <td>
-                        <a href="{{ url_for('download_report', id=report.id) }}">{{ report.report_name }}</a></td>
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.telefone }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

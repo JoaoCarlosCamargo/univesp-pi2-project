@@ -9,20 +9,12 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 import base64
+from twilio.rest import Client
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
-
-def get_post(post_id):
-    conn = get_db_connection()
-    post = conn.execute('SELECT * FROM posts WHERE id = ?',
-                        (post_id,)).fetchone()
-    conn.close()
-    if post is None:
-        abort(404)
-    return post
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'chave-secreta'
@@ -102,14 +94,13 @@ def login():
 @login_required
 def admin():
     conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM posts').fetchall()
     contato = conn.execute('SELECT * FROM contato').fetchall()
     promocao = conn.execute('SELECT * FROM promocao').fetchall()
     usuarios = conn.execute('SELECT * FROM usuarios').fetchall()
-    reports = conn.execute('SELECT * FROM reports ORDER BY ordem').fetchall()
     textos = conn.execute('SELECT * FROM textos').fetchall()
+    clientes = conn.execute('SELECT * FROM cliente').fetchall()
     conn.close()
-    return render_template('admin.html', usuario=current_user.nome, posts=posts, contato=contato, usuarios=usuarios, reports=reports, textos=textos, promocao=promocao)
+    return render_template('admin.html', usuario=current_user.nome, contato=contato, usuarios=usuarios, textos=textos, promocao=promocao, clientes=clientes)
 
 @app.route('/logout')
 @login_required
@@ -130,11 +121,9 @@ indice_atual = 0
 @app.route('/')
 def index():
     conn = get_db_connection()
-    posts = conn.execute('SELECT * FROM posts').fetchall()
     contato = conn.execute('SELECT whatsapp, facebook, instagram, email, endereco FROM contato').fetchall()
     mensagem_bottom = conn.execute('SELECT texto FROM mensagem_bottom').fetchall()
     textos = conn.execute('SELECT * FROM textos').fetchall()
-    reports = conn.execute('SELECT * FROM reports ORDER BY ordem').fetchall()
     promocao = conn.execute('SELECT nome, descricao, imagem FROM promocao').fetchall()
     # Criar uma lista para armazenar as promoções com a URL da imagem
     promocoes_com_url = []
@@ -167,21 +156,7 @@ def index():
     conn.close()
     global indice_atual
     imagem_atual = imagens[indice_atual]
-    return render_template('index.html', posts=posts, contato=contato, mensagem_bottom=mensagem_bottom, imagem=imagem_atual, textos=textos, reports=reports, promocao=promocoes_com_url)
-
-@app.route('/<int:post_id>')
-def post(post_id):
-    post = get_post(post_id)
-    return render_template('post.html', post=post)
-
-@app.route('/semeie')
-def semeie():
-    conn = get_db_connection()
-    textos = conn.execute('SELECT * FROM textos').fetchall()
-    contato = conn.execute('SELECT whatsapp, facebook, instagram, email, endereco FROM contato').fetchall()
-    conn.close()
-
-    return render_template('semeie.html', textos=textos, contato=contato)
+    return render_template('index.html', contato=contato, mensagem_bottom=mensagem_bottom, imagem=imagem_atual, textos=textos, promocao=promocoes_com_url)
 
 @app.route('/proxima')
 def proxima():
@@ -194,55 +169,6 @@ def anterior():
     global indice_atual
     indice_atual = (indice_atual - 1) % len(imagens)
     return jsonify({'imagem': imagens[indice_atual]})
-
-@app.route("/admin/excluir_post/<int:id>")
-def excluir_post(id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM posts WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
-    flash('Postagem excluída!')
-    return redirect(url_for("admin"))
-
-# Route for creating a new post
-@app.route('/admin/create_post', methods=['GET', 'POST'])
-@login_required
-def create_post():
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('INSERT INTO posts (title, content) VALUES (?, ?)', (title, content))
-        conn.commit()
-        conn.close()
-        flash('Postagem criada com sucesso!')
-        return redirect(url_for('admin'))
-    return render_template('create_post.html')
-
-# Route for editing a post
-@app.route('/admin/edit_post/<int:id>', methods=['GET', 'POST'])
-@login_required
-def edit_post(id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM posts WHERE id = ?', (id,))
-    post = cursor.fetchone()
-    conn.close()
-
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('UPDATE posts SET title = ?, content = ? WHERE id = ?', (title, content, id))
-        conn.commit()
-        conn.close()
-        flash('Postagem alterada com sucesso!')
-        return redirect(url_for('admin'))
-
-    return render_template('edit_post.html', post=post)
 
 @app.route("/admin/excluir_usuario/<int:id>")
 def excluir_usuario(id):
@@ -292,101 +218,6 @@ def edit_usuario(id):
         return redirect(url_for('admin'))
 
     return render_template('edit_usuario.html', usuario=usuario)
-
-# Rota para upload de novo relatório
-@app.route('/reports/new', methods=['GET', 'POST'])
-@login_required
-def create_report():
-    if request.method == 'POST':
-        description = request.form['description']
-        ordem = request.form['ordem']
-        if 'report_file' not in request.files:
-            flash('Selecione um arquivo PDF para upload')
-            return redirect(url_for('create_report'))
-
-        report_file = request.files['report_file']
-        
-        # Extract filename from report_file object
-        filename = report_file.filename
-        
-        if filename.endswith('.pdf'):
-            report_data = report_file.read()
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute('INSERT INTO reports (description, report_name, report_file, ordem) VALUES (?, ?, ?, ?)', (description, filename, report_data, ordem))
-            conn.commit()
-            conn.close()
-            flash('Relatório cadastrado com sucesso!')
-            return redirect(url_for('admin'))
-        else:
-            flash('Apenas arquivos PDF são permitidos')
-            return redirect(url_for('create_report'))
-
-    return render_template('create_report.html')
-
-@app.route('/reports/<int:id>/download')
-def download_report(id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM reports WHERE id = ?', (id,))
-    report = cursor.fetchone()
-    conn.commit()
-    conn.close()
-
-    if report is None:
-        abort(404)
-
-    # Retrieve the PDF data from the database
-    pdf_data = report[2]
-
-    # Specify the download name (optional but recommended)
-    download_name = report[3]
-
-    response = send_file(BytesIO(pdf_data), as_attachment=True, mimetype='application/pdf', download_name=download_name)
-    return response
-
-@app.route("/admin/excluir_report/<int:id>")
-def excluir_report(id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM reports WHERE id = ?", (id,))
-    conn.commit()
-    conn.close()
-    flash('Relatório excluído!')
-    return redirect(url_for("admin"))
-
-# Route for editing a report
-@app.route('/admin/edit_report/<int:id>', methods=['GET', 'POST'])
-@login_required
-def edit_report(id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM reports WHERE id = ?', (id,))
-    report = cursor.fetchone()
-    conn.close()
-
-    if request.method == 'POST':
-        description = request.form['description']
-        report_file = request.files['report_file']
-        ordem = request.form['ordem']
-        
-        # Extract filename from report_file object
-        filename = report_file.filename
-        
-        if filename.endswith('.pdf'):
-            report_data = report_file.read()
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute('update reports set description = ?, report_name = ?, report_file = ?, ordem = ? where id = ?', (description, filename, report_data, ordem, id))
-            conn.commit()
-            conn.close()
-            flash('Relatório alterado com sucesso!')
-            return redirect(url_for('admin'))
-        else:
-            flash('Apenas arquivos PDF são permitidos')
-            return redirect(url_for('edit_report'))
-
-    return render_template('edit_report.html', report=report)
 
 # Route for editing a contato
 @app.route('/admin/edit_contato/<int:id>', methods=['GET', 'POST'])
@@ -487,6 +318,85 @@ def posts():
     conn.close()
 
     return render_template('posts.html', posts=posts)
+
+# Rota para exibir o formulário de cadastro
+@app.route('/cadastro')
+def cadastro():
+    return render_template('cadastro.html')
+
+# Rota para processar o cadastro
+@app.route('/cadastro', methods=['POST'])
+def process_cadastro():
+    nome = request.form['nome']
+    telefone = request.form['telefone']
+
+    if not nome or not telefone:
+        flash('Todos os campos são obrigatórios!')
+        return redirect('/')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Verificar se o telefone já está cadastrado
+    cursor.execute('SELECT * FROM cliente WHERE telefone = ?', (telefone,))
+    usuario_existente = cursor.fetchone()
+    
+    if usuario_existente:
+        flash('Este número de telefone já está cadastrado!')
+        conn.close()
+        return redirect('/cadastro')
+    
+    # Inserir o novo cadastro se o telefone não existir
+    cursor.execute('INSERT INTO cliente (nome, telefone) VALUES (?, ?)', (nome, telefone))
+    conn.commit()
+    conn.close()
+
+    flash('Cadastro realizado com sucesso!')
+
+    # Aqui você pode chamar a função para enviar SMS ou WhatsApp
+    # enviar_sms(telefone) ou enviar_whatsapp(telefone)
+    enviar_whatsapp(telefone)
+
+    return redirect('/')
+
+# Função para enviar mensagem no WhatsApp
+def enviar_whatsapp(telefone):
+    account_sid = 'AC5b30a8de6e335f7a233678b3b9ee8758'
+    auth_token = 'bd8b0ddf1fa5047c3329401edcca3f8c'
+    client = Client(account_sid, auth_token)
+
+    mensagem = client.messages.create(
+        body="Obrigado por se cadastrar para receber as promoções das delícias doces da Ana!",
+        from_='whatsapp:+14155238886',
+        to=f'whatsapp:+55{telefone}'
+    )
+
+    print(mensagem.sid)
+
+# Função para enviar SMS usando Twilio
+def enviar_sms(telefone):
+    account_sid = 'AC5b30a8de6e335f7a233678b3b9ee8758'
+    auth_token = 'bd8b0ddf1fa5047c3329401edcca3f8c'
+    client = Client(account_sid, auth_token)
+    print(telefone)
+
+    mensagem = client.messages.create(
+        body="Obrigado por se cadastrar para receber as promoções das delícias doces da Ana!",
+        from_='+17315404560',
+        to=telefone
+    )
+
+    print(mensagem.sid)
+
+@app.route("/admin/excluir_cliente/<int:id>")
+def excluir_cliente(id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM cliente WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    flash('Cliente excluído!')
+    return redirect(url_for("admin"))
 
 if __name__ == "__main__":
   criar_tabelas()

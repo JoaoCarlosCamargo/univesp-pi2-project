@@ -1,0 +1,27 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<br><br><br><br><br>
+    <h1>Cadastro para Receber Promoções</h1>
+
+    <form action="/cadastro" method="POST">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br>
+
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required><br>
+
+        <input type="submit" value="Cadastrar">
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+{% endblock %}
